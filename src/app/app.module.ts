@@ -5,6 +5,8 @@ import { MentionModule } from 'angular-mentions';
 import { AppComponent } from './app.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
+import {NgxTributeModule} from 'ngx-tribute';
+
 
 @NgModule({
   declarations: [
@@ -15,7 +17,8 @@ import { PickerModule } from '@ctrl/ngx-emoji-mart';
     BrowserModule,
     MentionModule,
     PickerModule,
-    FormsModule
+    FormsModule,
+    NgxTributeModule
   ],
   providers: [],
   bootstrap: [AppComponent]
