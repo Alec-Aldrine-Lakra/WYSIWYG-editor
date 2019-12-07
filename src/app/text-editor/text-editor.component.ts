@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ɵNAMESPACE_URIS } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-text-editor',
@@ -22,23 +23,37 @@ export class TextEditorComponent implements OnInit {
     this.mentionConfig = {
       mentions: [
         {
-            items: [ "Noah", "Liam", "Mason", "Jacob", "Anmol", "Alec","Niraj"],
+            items: this.names(),
             triggerChar: '@',
-            mentionSelect: (item)=>`@${item.name}`,
+            mentionSelect: (item)=>{
+              this.tribute = `@${item.name}`;
+              return this.tribute;
+            },
             labelKey: 'name',
             maxItems: 4, 
             disableSearch: false
         },
         {
-            items: [ "20/12/13", "13/4/19", "16/12/11"],
+            items: this.dates(),
             triggerChar: '#',
-            mentionSelect: (item)=>`#${item.date}`,
+            mentionSelect: (item)=>{
+              this.tribute = `#${item.date}`;
+              return this.tribute;
+            },
             labelKey: 'date',
             maxItems: 4, 
             disableSearch: false
         },
       ], 
     }
+  }
+  
+  names(){ //return names
+    return ['Alec', 'Joyce', 'Nalin', 'Dominic'];
+  }
+
+  dates(){ //return dates
+    return [ "20/12/13", "13/4/19", "16/12/11"]
   }
 
   ngOnInit() {
@@ -88,16 +103,15 @@ export class TextEditorComponent implements OnInit {
     
     this.text = this.getPrecedingCharacter(window.getSelection().anchorNode); //gets the last input character
 
-    if(this.format && this.startOffset){
-
+    if(this.format && this.startOffset && this.tribute){
       this.format = false;
-      this.endOffset = window.getSelection().getRangeAt(0).endOffset;      
+      let sel = window.getSelection();
+      this.endOffset = sel.getRangeAt(0).endOffset;
+
       let range = document.createRange(); 
       range.setStart(this.node, this.startOffset-1);
-      range.setEnd(this.node, this.endOffset);
-      let sel = window.getSelection();
-      this.tribute = range.toString();
-      range.deleteContents();
+      range.setEnd(this.node, this.endOffset);      
+      range.deleteContents(); //deleting previous set contents
       this.html = document.getElementById('editor').innerHTML;
     }
     
@@ -116,14 +130,22 @@ export class TextEditorComponent implements OnInit {
   }
 
   closed(){
+    if(this.tribute!=""){
+      let span = document.createElement('span');
+      span.appendChild(document.createTextNode(`${this.tribute}`));
+      span.setAttribute('contenteditable', 'false');
+      span.style.backgroundColor = '#dff6f0';
+      span.style.color = '#2e279d';
+      span.style.fontWeight = '600';
 
-    let span = document.createElement('span');
-    span.appendChild(document.createTextNode(`${this.tribute}`));
-    span.setAttribute('contenteditable', 'false');
-    span.style.backgroundColor = '#dff6f0';
-    span.style.color = '#2e279d';
-    let range = window.getSelection().getRangeAt(0);
-    range.insertNode(span);
-    range.collapse(true);
+      let sel = window.getSelection();
+      let range = sel.getRangeAt(0);
+      range.insertNode(document.createTextNode(' '));
+      range.insertNode(span);
+      range.insertNode(document.createTextNode(' ')); 
+      range.setStartAfter(span); 
+      range.collapse(true);
+      this.tribute="";
+    }
   }
 }
