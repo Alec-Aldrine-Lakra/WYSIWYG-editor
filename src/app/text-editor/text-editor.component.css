@@ -15,6 +15,14 @@
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     overflow-y: scroll;
 }
+
+[contenteditable][placeholder]:empty:before {
+    content: attr(placeholder);
+    position: absolute;
+    color: gray;
+    background-color: transparent;
+}
+
 #controls{
     display: flex;
     flex-direction: row;

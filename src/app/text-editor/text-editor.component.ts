@@ -18,6 +18,7 @@ export class TextEditorComponent implements OnInit {
   public tribute: string;
   public sel: any;
   public innerText: any;
+  public flag=0;
   constructor() {
 
     window.onbeforeunload = ()=>{
@@ -63,8 +64,9 @@ export class TextEditorComponent implements OnInit {
   }
 
   ngOnInit() {
-      document.getElementById('editor').focus();
+      //document.getElementById('editor').focus();
       this.sel = window.getSelection();
+      document.getElementById('editor').appendChild(document.createElement('br'));
       document.querySelectorAll('button')[0].addEventListener('click',()=>{
         document.execCommand('bold', false, '');
       });
@@ -86,6 +88,23 @@ export class TextEditorComponent implements OnInit {
       document.onselectionchange = () => {
         this.sel = window.getSelection();
       };
+      document.getElementById('editor').addEventListener('keydown',(event)=>{
+        if(event.which==8)
+        {
+          this.flag=1;
+          let r = this.sel.getRangeAt(0).cloneRange();
+          console.log(r);
+        }
+        else if(this.flag==1){
+          document.execCommand('removeFormat', false, '');
+          this.flag=0;
+        }
+      })
+      document.getElementById('editor').addEventListener('click',()=>{     
+          let range = this.sel.getRangeAt(0);
+          console.log(this.sel);
+          console.log(range);
+      })
   }
   
   blur(){
@@ -126,8 +145,9 @@ export class TextEditorComponent implements OnInit {
     this.showEmoji = false;
   }
 
-  setValue(innerText){
+  setValue(innerText, innerHtml){
     this.innerText = innerText;
+    //console.log(innerHtml);
     if(this.innerText === '')
       document.execCommand('removeFormat', false, ''); //remove previous format once the editor is clear
     
@@ -160,7 +180,12 @@ export class TextEditorComponent implements OnInit {
     if(this.tribute !== '')
     {
       const span = document.createElement('span');
+      const removeSp1 = document.createElement('span'); //creating two span elements to surround the @mention tag
+      //const removeSp2 = document.createElement('span');
+    
       span.appendChild(document.createTextNode(`${this.tribute}`));
+      //removeSp1.setAttribute('class','remove');
+      //removeSp2.setAttribute('class','remove');
       span.setAttribute('contenteditable', 'false');
       span.style.backgroundColor = '#dff6f0';
       span.style.color = '#2e279d';
@@ -169,8 +194,13 @@ export class TextEditorComponent implements OnInit {
       span.style.cursor = 'pointer';
       span.style.zIndex = '5';
       const range = this.sel.getRangeAt(0);
-      range.insertNode(span);
-      range.setStartAfter(span);
+      //removeSp1.appendChild(document.createTextNode(' '));
+      removeSp1.appendChild(span);
+      removeSp1.appendChild(document.createTextNode(' '));
+      range.insertNode(removeSp1);
+      //range.insertNode(span);  
+      //range.insertNode(removeSp2);
+      range.setStartAfter(removeSp1);
       this.tribute = '';
     }
   }
