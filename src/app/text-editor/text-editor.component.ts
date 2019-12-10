@@ -6,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./text-editor.component.css']
 })
 export class TextEditorComponent implements OnInit {
+  public oldRange: any;
   public mentionConfig: any;
   public showEmoji: boolean;
   public lastChar: any;
@@ -15,16 +16,16 @@ export class TextEditorComponent implements OnInit {
   public endOffset: any;
   public node: any;
   public tribute: string;
-  public static oldRange: any;
-  public sel : any;
+  public sel: any;
+  public innerText: any;
   constructor() {
 
     window.onbeforeunload = ()=>{
       sessionStorage.removeItem('range');
-    }
+    };
 
     this.showEmoji = false;
-    this.tribute="";
+    this.tribute = '';
     this.mentionConfig = {
       mentions: [
         {
@@ -50,57 +51,49 @@ export class TextEditorComponent implements OnInit {
             disableSearch: false
         },
       ], 
-    }
+    };
   }
   
-  names(){ //return names
+  names(){ // return names
     return ['Alec', 'Joyce', 'Nalin', 'Dominic'];
   }
 
-  dates(){ //return dates
-    return [ "20-12-13", "13-04-19", "16-12-11"]
+  dates(){ // return dates
+    return [ '20-12-13', '13-04-19', '16-12-11']
   }
 
   ngOnInit() {
-      
       document.getElementById('editor').focus();
       this.sel = window.getSelection();
-
       document.querySelectorAll('button')[0].addEventListener('click',()=>{
         document.execCommand('bold', false, '');
-      })
-      
+      });
       document.querySelectorAll('button')[1].addEventListener('click',()=>{
           document.execCommand('italic', false, '');
-      })
-      
+      });
       document.querySelectorAll('button')[2].addEventListener('click',()=>{
           document.execCommand('strikeThrough', false, '');
-      })
-      
+      });      
       document.querySelectorAll('button')[3].addEventListener('click',()=>{
           document.execCommand('underline', false, '');
-      })
-
+      });
       document.querySelectorAll('button')[4].addEventListener('click',()=>{
         document.execCommand('insertunorderedList', false, '');
-      })
-
+      });
       document.querySelectorAll('button')[5].addEventListener('click',()=>{
         document.execCommand('insertorderedList', false, '');
-      })
-
+      });
       document.onselectionchange = () => {
         this.sel = window.getSelection();
-      }
+      };
   }
   
   blur(){
-    TextEditorComponent.oldRange = this.sel.getRangeAt(0).cloneRange(); //to store the range when element is blurred
+    this.oldRange = this.sel.getRangeAt(0).cloneRange(); // to store the range when element is blurred
   }
 
   toggleEmojiPicker(){
-    this.showEmoji = this.showEmoji==true?false:true;
+    this.showEmoji = this.showEmoji === true?false:true;
     if(!this.showEmoji)
       document.getElementById('editor').focus();
   }
@@ -108,18 +101,20 @@ export class TextEditorComponent implements OnInit {
   addEmoji(event){
 
     document.getElementById('editor').focus();
-    if (window.getSelection) {
+    if (window.getSelection) 
+    {
       this.sel.removeAllRanges();
-      this.sel.addRange(TextEditorComponent.oldRange);
-      let range = this.sel.getRangeAt(0);
-      let e = document.createElement('span');
-      let id = event.emoji.id;
-      let re =/^flag-/
-      if(!re.test(id))
-          e.appendChild(document.createTextNode(event.emoji.native));
+      this.sel.addRange(this.oldRange);
+      const range = this.sel.getRangeAt(0);
+      const e = document.createElement('span');
+      const id = event.emoji.id;
+      const re =/^flag-/
+      if(!re.test(id)){
+        e.appendChild(document.createTextNode(event.emoji.native));
+      }
       else
       {
-          let country = id.slice(id.indexOf('-')+1);
+          const country = id.slice(id.indexOf('-')+1);
           e.setAttribute('class',`flag-icon flag-icon-${country}`);
           e.setAttribute('contenteditable','false');
       }
@@ -131,17 +126,20 @@ export class TextEditorComponent implements OnInit {
     this.showEmoji = false;
   }
 
-  setValue(){
+  setValue(innerText){
+    this.innerText = innerText;
+    if(this.innerText === '')
+      document.execCommand('removeFormat', false, ''); //remove previous format once the editor is clear
     
     this.lastChar = this.getPrecedingCharacter(window.getSelection().anchorNode); //gets the last input character
     if(this.format && this.startOffset && this.tribute){
       this.format = false;
       this.endOffset = this.sel.getRangeAt(0).endOffset;
 
-      let range = document.createRange(); 
+      const range = document.createRange(); 
       range.setStart(this.node, this.startOffset-1);
       range.setEnd(this.node, this.endOffset);      
-      range.deleteContents(); //deleting previous set contents
+      range.deleteContents(); // deleting previous set contents
     }
     
     if(this.lastChar === '@' || this.lastChar === '#'){
@@ -151,26 +149,29 @@ export class TextEditorComponent implements OnInit {
     }
   }
 
-  getPrecedingCharacter(container : any){ //get last character
-    let r = this.sel.getRangeAt(0).cloneRange();
+  getPrecedingCharacter(container : any)// get last character
+  { 
+    const r = this.sel.getRangeAt(0).cloneRange();
     r.setStart(container, 0);
     return r.toString().slice(-1);
   }
 
-  closed(){ //insert mentions 
-    if(this.tribute!=""){
-      let span = document.createElement('span');
+  closed(){ //insert mentions
+    if(this.tribute !== '')
+    {
+      const span = document.createElement('span');
       span.appendChild(document.createTextNode(`${this.tribute}`));
       span.setAttribute('contenteditable', 'false');
       span.style.backgroundColor = '#dff6f0';
       span.style.color = '#2e279d';
       span.style.fontWeight = '600';
-      span.style.pointerEvents='auto';
+      span.style.pointerEvents = 'auto';
       span.style.cursor = 'pointer';
-      let range = this.sel.getRangeAt(0);
-      range.insertNode(span); 
+      span.style.zIndex = '5';
+      const range = this.sel.getRangeAt(0);
+      range.insertNode(span);
       range.setStartAfter(span);
-      this.tribute="";
+      this.tribute = '';
     }
   }
 }
