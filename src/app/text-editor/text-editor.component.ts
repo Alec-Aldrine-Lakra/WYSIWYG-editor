@@ -91,18 +91,66 @@ export class TextEditorComponent implements OnInit {
       document.getElementById('editor').addEventListener('keydown',(event)=>{
         if(event.which==8)
         {
-          this.flag=1;
-          let r = this.sel.getRangeAt(0).cloneRange();
-          console.log(r);
-        }
-        else if(this.flag==1){
-          document.execCommand('removeFormat', false, '');
-          this.flag=0;
+            let r = this.sel.getRangeAt(0);
+            if(r.startOffset===0 && r.endOffset === 0 && r.startContainer.previousElementSibling.contentEditable === 'false'){ //if mention is at the beginning along with other elements or in the middle
+              
+              console.log('HIT2');
+              let [endOffset, endNode, startNode, startOffset] = [r.endOffset, r.endContainer, r.startContainer.previousElementSibling.childNodes[0], 0];
+              let nR= document.createRange();
+              nR.setStart(startNode, startOffset);
+              nR.setEnd(endNode, endOffset);
+              this.sel.removeAllRanges();   
+              nR.deleteContents();
+
+              let br = document.createElement('br'); //removes the contents
+              nR.insertNode(br);
+              nR.setStartBefore(br);
+              this.sel.addRange(nR);
+
+              let ar = nR.startContainer.childNodes; //remove the empty span node
+              ar.forEach(i=>{
+                let item: any;
+                item = i;
+                if(item['contentEditable'] === 'false' && item.innerText === "") {
+                  item.remove();
+                  return;
+                }
+              })
+            }
+            else if(r.startContainer.firstElementChild && r.startContainer.firstElementChild.contentEditable === 'false'){ // if only mention is present at first
+              
+              console.log('HIT1');
+              let i = r.startContainer.children.length-2;
+              let [endOffset, endNode, startNode, startOffset] = [r.endOffset+1,  r.endContainer, r.startContainer.children[i].childNodes[0], 0];
+              let nR= document.createRange();
+              nR.setStart(startNode, startOffset);
+              nR.setEnd(endNode, endOffset);
+              this.sel.removeAllRanges();   
+              nR.deleteContents();
+
+              let br = document.createElement('br'); //removes the contents
+              nR.insertNode(br);
+              nR.setStartBefore(br);
+              this.sel.addRange(nR);
+
+              let ar = nR.startContainer.childNodes; //remove the empty span node
+              ar.forEach(i=>{
+                let item: any;
+                item = i;
+                if(item['contentEditable'] === 'false' && item.innerText === "") {
+                  item.remove();
+                  return;
+                }
+              })
+            }       
         }
       })
-      document.getElementById('editor').addEventListener('click',()=>{     
+
+     
+     
+     
+      document.getElementById('editor').addEventListener('click',()=>{     //just for check purpose
           let range = this.sel.getRangeAt(0);
-          console.log(this.sel);
           console.log(range);
       })
   }
@@ -180,27 +228,19 @@ export class TextEditorComponent implements OnInit {
     if(this.tribute !== '')
     {
       const span = document.createElement('span');
-      const removeSp1 = document.createElement('span'); //creating two span elements to surround the @mention tag
-      //const removeSp2 = document.createElement('span');
-    
       span.appendChild(document.createTextNode(`${this.tribute}`));
-      //removeSp1.setAttribute('class','remove');
-      //removeSp2.setAttribute('class','remove');
       span.setAttribute('contenteditable', 'false');
       span.style.backgroundColor = '#dff6f0';
       span.style.color = '#2e279d';
       span.style.fontWeight = '600';
       span.style.pointerEvents = 'auto';
       span.style.cursor = 'pointer';
-      span.style.zIndex = '5';
       const range = this.sel.getRangeAt(0);
-      //removeSp1.appendChild(document.createTextNode(' '));
-      removeSp1.appendChild(span);
-      removeSp1.appendChild(document.createTextNode(' '));
-      range.insertNode(removeSp1);
-      //range.insertNode(span);  
-      //range.insertNode(removeSp2);
-      range.setStartAfter(removeSp1);
+      range.insertNode(span); 
+      let sp = document.createTextNode(' ');
+      range.insertNode(sp);
+      range.setStartAfter(span);
+      range.collapse(true);
       this.tribute = '';
     }
   }
