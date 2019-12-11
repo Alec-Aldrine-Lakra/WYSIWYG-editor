@@ -24,6 +24,7 @@
     "angular-mentions": "^1.1.3",
     "flag-icon-css": "^3.4.5",
     "rxjs": "~6.4.0",
+    "serialize-javascript": "^2.1.2",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"
   },
