@@ -21,6 +21,7 @@ export class TextEditorComponent implements OnInit {
   public innerText: any;
   public flag=0;
   public browser: string;
+  public innerHtml: string;
   constructor() {
 
     this.browser = Bowser.getParser(window.navigator.userAgent).getBrowserName();
@@ -91,72 +92,75 @@ export class TextEditorComponent implements OnInit {
       document.querySelectorAll('.btn-editor')[5].addEventListener('click',()=>{
         document.execCommand('insertorderedList', false, '');
       });
-      // document.getElementById('editor').addEventListener('keydown',(event)=>{ //firefox based browser code
-      //   if(event.which==8)
-      //   {
-      //       let r = this.sel.getRangeAt(0);
-      //       if(r.startOffset===0 && r.endOffset === 0 && r.startContainer.previousElementSibling && r.startContainer.previousElementSibling.contentEditable === 'false'){ //if mention is at the beginning along with other elements or in the middle
 
-      //         let [endOffset, endNode, startNode, startOffset] = [r.endOffset, r.endContainer, r.startContainer.previousElementSibling.childNodes[0], 0];
-      //         let nR= document.createRange();
-      //         nR.setStart(startNode, startOffset);
-      //         nR.setEnd(endNode, endOffset);
-      //         this.sel.removeAllRanges();   
-      //         nR.deleteContents();
+      // if(this.browser === 'Firefox'){
+      //     document.getElementById('editor').addEventListener('keydown',(event)=>{ //firefox based browser code
+      //     if(event.which==8)
+      //     {
+      //         let r = this.sel.getRangeAt(0);
+      //         if(r.startOffset===0 && r.endOffset === 0 && r.startContainer.previousElementSibling && r.startContainer.previousElementSibling.contentEditable === 'false'){ //if mention is at the beginning along with other elements or in the middle
 
-      //         let br = document.createElement('br'); //removes the contents
-      //         nR.insertNode(br);
-      //         nR.setStartBefore(br);
-      //         this.sel.addRange(nR);
+      //           let [endOffset, endNode, startNode, startOffset] = [r.endOffset, r.endContainer, r.startContainer.previousElementSibling.childNodes[0], 0];
+      //           let nR= document.createRange();
+      //           nR.setStart(startNode, startOffset);
+      //           nR.setEnd(endNode, endOffset);
+      //           this.sel.removeAllRanges();   
+      //           nR.deleteContents();
 
-      //         let ar = nR.startContainer.childNodes; //remove the empty span node
-      //         ar.forEach(i=>{
-      //           let item: any;
-      //           item = i;
-      //           if(item['contentEditable'] === 'false' && item.innerText === "") {
-      //             item.remove();
-      //             return;
-      //           }
-      //         })
-      //       }
-      //       else if(r.startContainer.firstElementChild && r.startContainer.firstElementChild.contentEditable === 'false'){ // if only mention is present at first
-              
-      //         console.log('HIT1');
-      //         let i = r.startContainer.children.length-1;
-      //         while(i>=0){
-      //           if(r.startContainer.children[i].contentEditable === 'false') //last span contenteditable false
-      //             break;
-      //           i--;
+      //           let br = document.createElement('br'); //removes the contents
+      //           nR.insertNode(br);
+      //           nR.setStartBefore(br);
+      //           this.sel.addRange(nR);
+
+      //           let ar = nR.startContainer.childNodes; //remove the empty span node
+      //           ar.forEach(i=>{
+      //             let item: any;
+      //             item = i;
+      //             if(item['contentEditable'] === 'false' && item.innerText === "") {
+      //               item.remove();
+      //               return;
+      //             }
+      //           })
       //         }
-      //         let [endOffset, endNode, startNode, startOffset] = [r.endOffset+1,  r.endContainer, r.startContainer.children[i].childNodes[0], 0];
-      //         console.log(r.startContainer.children[i].childNodes);
-      //         let nR= document.createRange();
-      //         nR.setStart(startNode, startOffset);
-      //         nR.setEnd(endNode, endOffset);
-      //         this.sel.removeAllRanges();   
-      //         nR.deleteContents();
-
-      //         let br = document.createElement('br'); //removes the contents
-      //         nR.insertNode(br);
-      //         nR.setStartBefore(br);
-      //         this.sel.addRange(nR);
-
-      //         let ar = nR.startContainer.childNodes; //remove the empty span node
-      //         ar.forEach(i=>{
-      //           let item: any;
-      //           item = i;
-      //           if(item['contentEditable'] === 'false' && item.innerText === "") {
-      //             item.remove();
-      //             return;
+      //         else if(r.startContainer.firstElementChild && r.startContainer.firstElementChild.contentEditable === 'false'){ // if only mention is present at first
+                
+      //           console.log('HIT1');
+      //           let i = r.startContainer.children.length-1;
+      //           while(i>=0){
+      //             if(r.startContainer.children[i].contentEditable === 'false') //last span contenteditable false
+      //               break;
+      //             i--;
       //           }
-      //         })
-      //       }
-      //       else{
-      //         console.log('Cool');
-      //       }       
-      //   }
-      // })
+      //           let [endOffset, endNode, startNode, startOffset] = [r.endOffset+1,  r.endContainer, r.startContainer.children[i].childNodes[0], 0];
+      //           console.log(r.startContainer.children[i].childNodes);
+      //           let nR= document.createRange();
+      //           nR.setStart(startNode, startOffset);
+      //           nR.setEnd(endNode, endOffset);
+      //           this.sel.removeAllRanges();   
+      //           nR.deleteContents();
 
+      //           let br = document.createElement('br'); //removes the contents
+      //           nR.insertNode(br);
+      //           nR.setStartBefore(br);
+      //           this.sel.addRange(nR);
+
+      //           let ar = nR.startContainer.childNodes; //remove the empty span node
+      //           ar.forEach(i=>{
+      //             let item: any;
+      //             item = i;
+      //             if(item['contentEditable'] === 'false' && item.innerText === "") {
+      //               item.remove();
+      //               return;
+      //             }
+      //           })
+      //         }
+      //         else{
+      //           console.log('Cool');
+      //         }       
+      //     }
+      //   })
+      // }
+      
       document.getElementById('editor').addEventListener('click',()=>{     //just for check purpose
           let range = this.sel.getRangeAt(0);
           console.log(range);
@@ -191,7 +195,10 @@ export class TextEditorComponent implements OnInit {
       {
           const country = id.slice(id.indexOf('-')+1);
           e.setAttribute('class',`flag-icon flag-icon-${country}`);
-          e.setAttribute('contenteditable','false');
+          if(this.browser === 'Firefox')
+            e.setAttribute('contenteditable','true');
+          else
+            e.setAttribute('contenteditable','false');
       }
       document.getElementById('editor').focus();
       range.insertNode(e);
@@ -204,7 +211,9 @@ export class TextEditorComponent implements OnInit {
 
   setValue(innerText, innerHtml){
     this.innerText = innerText;
-    //console.log(innerHtml);
+    this.innerHtml = innerHtml;
+    // console.log(innerHtml);
+    // console.log(this.innerHtml);
     if(this.innerText === '')
       document.execCommand('removeFormat', false, ''); //remove previous format once the editor is clear
     
@@ -236,25 +245,50 @@ export class TextEditorComponent implements OnInit {
   closed(){ //insert mentions
     if(this.tribute !== '')
     {
-      const span = document.createElement('span');
-      span.appendChild(document.createTextNode(`${this.tribute}`));
-      span.setAttribute('contenteditable', 'false');
-      span.style.backgroundColor = '#dff6f0';
-      span.style.color = '#2e279d';
-      span.style.fontWeight = '600';
-      span.style.pointerEvents = 'auto';
-      span.style.cursor = 'pointer';
+      // const span = document.createElement('span');
+      // span.appendChild(document.createTextNode(`${this.tribute}`));
+      // span.setAttribute('contenteditable', 'false');
+      // span.style.backgroundColor = '#dff6f0';
+      // span.style.color = '#2e279d';
+      // span.style.fontWeight = '600';
+      // span.style.pointerEvents = 'auto';
+      // span.style.cursor = 'pointer';
+      // const range = this.sel.getRangeAt(0);
+      // this.sel.removeAllRanges();
+
+      // let sp1 = document.createTextNode(' ');
+      // let sp2 = document.createTextNode(' ');
+      // range.insertNode(sp1); //inserting space front and back
+      // range.insertNode(span);
+      // range.insertNode(sp2);
+      // range.setStartAfter(sp1);
+      // this.sel.addRange(range);
+      // this.tribute = '';
+
+
+      const input = document.createElement('input');
+      input.setAttribute('value',`${this.tribute}`);
+      input.setAttribute('type','button');
+      input.style.border = 'none';
+      input.style.padding = "3px";
+      input.style.backgroundColor = '#dff6f0';
+      input.style.color = '#2e279d';
+      input.style.fontWeight = '600';
+      input.style.cursor = 'pointer';
       const range = this.sel.getRangeAt(0);
       this.sel.removeAllRanges();
-
       let sp1 = document.createTextNode(' ');
       let sp2 = document.createTextNode(' ');
       range.insertNode(sp1); //inserting space front and back
-      range.insertNode(span);
+      range.insertNode(input);
       range.insertNode(sp2);
       range.setStartAfter(sp1);
       this.sel.addRange(range);
       this.tribute = '';
     }
+  }
+  saveData(){
+    document.getElementById('content').innerHTML = '';
+    document.getElementById('content').innerHTML = this.innerHtml;
   }
 }
