@@ -1,3 +1,4 @@
+'use strict';
 import { Component, OnInit } from '@angular/core';
 import * as Bowser from "bowser";
 
@@ -92,79 +93,14 @@ export class TextEditorComponent implements OnInit {
       document.querySelectorAll('.btn-editor')[5].addEventListener('click',()=>{
         document.execCommand('insertorderedList', false, '');
       });
-
-      // if(this.browser === 'Firefox'){
-      //     document.getElementById('editor').addEventListener('keydown',(event)=>{ //firefox based browser code
-      //     if(event.which==8)
-      //     {
-      //         let r = this.sel.getRangeAt(0);
-      //         if(r.startOffset===0 && r.endOffset === 0 && r.startContainer.previousElementSibling && r.startContainer.previousElementSibling.contentEditable === 'false'){ //if mention is at the beginning along with other elements or in the middle
-
-      //           let [endOffset, endNode, startNode, startOffset] = [r.endOffset, r.endContainer, r.startContainer.previousElementSibling.childNodes[0], 0];
-      //           let nR= document.createRange();
-      //           nR.setStart(startNode, startOffset);
-      //           nR.setEnd(endNode, endOffset);
-      //           this.sel.removeAllRanges();   
-      //           nR.deleteContents();
-
-      //           let br = document.createElement('br'); //removes the contents
-      //           nR.insertNode(br);
-      //           nR.setStartBefore(br);
-      //           this.sel.addRange(nR);
-
-      //           let ar = nR.startContainer.childNodes; //remove the empty span node
-      //           ar.forEach(i=>{
-      //             let item: any;
-      //             item = i;
-      //             if(item['contentEditable'] === 'false' && item.innerText === "") {
-      //               item.remove();
-      //               return;
-      //             }
-      //           })
-      //         }
-      //         else if(r.startContainer.firstElementChild && r.startContainer.firstElementChild.contentEditable === 'false'){ // if only mention is present at first
-                
-      //           console.log('HIT1');
-      //           let i = r.startContainer.children.length-1;
-      //           while(i>=0){
-      //             if(r.startContainer.children[i].contentEditable === 'false') //last span contenteditable false
-      //               break;
-      //             i--;
-      //           }
-      //           let [endOffset, endNode, startNode, startOffset] = [r.endOffset+1,  r.endContainer, r.startContainer.children[i].childNodes[0], 0];
-      //           console.log(r.startContainer.children[i].childNodes);
-      //           let nR= document.createRange();
-      //           nR.setStart(startNode, startOffset);
-      //           nR.setEnd(endNode, endOffset);
-      //           this.sel.removeAllRanges();   
-      //           nR.deleteContents();
-
-      //           let br = document.createElement('br'); //removes the contents
-      //           nR.insertNode(br);
-      //           nR.setStartBefore(br);
-      //           this.sel.addRange(nR);
-
-      //           let ar = nR.startContainer.childNodes; //remove the empty span node
-      //           ar.forEach(i=>{
-      //             let item: any;
-      //             item = i;
-      //             if(item['contentEditable'] === 'false' && item.innerText === "") {
-      //               item.remove();
-      //               return;
-      //             }
-      //           })
-      //         }
-      //         else{
-      //           console.log('Cool');
-      //         }       
-      //     }
-      //   })
-      // }
-      
-      document.getElementById('editor').addEventListener('click',()=>{     //just for check purpose
+      document.getElementById('editor').addEventListener('click',()=>{     // just for check purpose
           let range = this.sel.getRangeAt(0);
           console.log(range);
       })
+      document.getElementById('editor').addEventListener('keydown',(e)=>{     // just for check purpose
+        
+        console.log(e);
+    })
   }
   
   blur(){
@@ -183,28 +119,27 @@ export class TextEditorComponent implements OnInit {
     if (window.getSelection) 
     {
       this.sel.removeAllRanges();
-      this.sel.addRange(this.oldRange);
-      const range = this.sel.getRangeAt(0);
       const e = document.createElement('span');
       const id = event.emoji.id;
-      const re =/^flag-/
+      const re =/^flag-/;
+      if(this.browser === 'Firefox')
+        e.setAttribute('contenteditable','true');
+      else 
+        e.setAttribute('contenteditable','false');
+
       if(!re.test(id)){
         e.appendChild(document.createTextNode(event.emoji.native));
       }
       else
       {
           const country = id.slice(id.indexOf('-')+1);
-          e.setAttribute('class',`flag-icon flag-icon-${country}`);
-          if(this.browser === 'Firefox')
-            e.setAttribute('contenteditable','true');
-          else
-            e.setAttribute('contenteditable','false');
+          e.setAttribute('class',`flag-icon flag-icon-${country}`);        
       }
-      document.getElementById('editor').focus();
-      range.insertNode(e);
-      this.sel.removeAllRanges();
-      range.setStartAfter(e);
-      this.sel.addRange(range);
+      let space  = document.createTextNode(' ');
+      this.oldRange.insertNode(e);
+      this.oldRange.insertNode(space);
+      this.oldRange.setStartAfter(e);
+      this.sel.addRange(this.oldRange);
     }
     this.showEmoji = false;
   }
@@ -212,8 +147,6 @@ export class TextEditorComponent implements OnInit {
   setValue(innerText, innerHtml){
     this.innerText = innerText;
     this.innerHtml = innerHtml;
-    // console.log(innerHtml);
-    // console.log(this.innerHtml);
     if(this.innerText === '')
       document.execCommand('removeFormat', false, ''); //remove previous format once the editor is clear
     
@@ -235,7 +168,23 @@ export class TextEditorComponent implements OnInit {
     }
   }
 
-  getPrecedingCharacter(container : any)// get last character
+  insName(){
+    if(window.getSelection){
+      let r = this.sel.getRangeAt(0).cloneRange();
+      this.sel.removeAllRanges();
+      const a = document.createTextNode('@');
+      r.insertNode(a);
+      r.insertNode(document.createTextNode(' '));
+      r.setStartAfter(a);
+      this.sel.addRange(r);
+      let event = new KeyboardEvent('keydown',{'key':'@', 'code':'Digit2'});
+        document.getElementById('editor').dispatchEvent(event);
+      
+    }
+  }
+
+
+  getPrecedingCharacter(container : any) // get last character
   { 
     const r = this.sel.getRangeAt(0).cloneRange();
     r.setStart(container, 0);
@@ -245,27 +194,6 @@ export class TextEditorComponent implements OnInit {
   closed(){ //insert mentions
     if(this.tribute !== '')
     {
-      // const span = document.createElement('span');
-      // span.appendChild(document.createTextNode(`${this.tribute}`));
-      // span.setAttribute('contenteditable', 'false');
-      // span.style.backgroundColor = '#dff6f0';
-      // span.style.color = '#2e279d';
-      // span.style.fontWeight = '600';
-      // span.style.pointerEvents = 'auto';
-      // span.style.cursor = 'pointer';
-      // const range = this.sel.getRangeAt(0);
-      // this.sel.removeAllRanges();
-
-      // let sp1 = document.createTextNode(' ');
-      // let sp2 = document.createTextNode(' ');
-      // range.insertNode(sp1); //inserting space front and back
-      // range.insertNode(span);
-      // range.insertNode(sp2);
-      // range.setStartAfter(sp1);
-      // this.sel.addRange(range);
-      // this.tribute = '';
-
-
       const input = document.createElement('input');
       input.setAttribute('value',`${this.tribute}`);
       input.setAttribute('type','button');
@@ -273,16 +201,16 @@ export class TextEditorComponent implements OnInit {
       input.style.padding = "3px";
       input.style.backgroundColor = '#dff6f0';
       input.style.color = '#2e279d';
-      input.style.fontWeight = '600';
+      input.style.fontWeight = '';
+      input.style.fontSize = 'inherit';
       input.style.cursor = 'pointer';
       const range = this.sel.getRangeAt(0);
       this.sel.removeAllRanges();
-      let sp1 = document.createTextNode(' ');
+
       let sp2 = document.createTextNode(' ');
-      range.insertNode(sp1); //inserting space front and back
       range.insertNode(input);
       range.insertNode(sp2);
-      range.setStartAfter(sp1);
+      range.setStartAfter(input);
       this.sel.addRange(range);
       this.tribute = '';
     }

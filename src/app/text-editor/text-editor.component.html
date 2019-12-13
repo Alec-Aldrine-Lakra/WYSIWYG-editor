@@ -29,6 +29,9 @@
         <button class="button btn-editor" (click)="saveData()">
             Save
         </button>
+        <button class="button btn-editor" (click)="insName()">
+            @
+        </button>
     </div>
     <div id="editor" (closed)="closed()" contenteditable (input)="setValue($event.target.innerText, $event.target.innerHTML)" [mentionConfig]="mentionConfig"  (blur)="blur()" placeholder="Jot something down..." > 
     </div>
