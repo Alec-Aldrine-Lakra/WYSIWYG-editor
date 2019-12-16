@@ -20,7 +20,7 @@ export class TextEditorComponent implements OnInit {
   public tribute: string;
   public sel: any;
   public innerText: any;
-  public flag=0;
+  public flag: number = 0;
   public browser: string;
   public innerHtml: string;
   constructor() {
@@ -93,14 +93,18 @@ export class TextEditorComponent implements OnInit {
       document.querySelectorAll('.btn-editor')[5].addEventListener('click',()=>{
         document.execCommand('insertorderedList', false, '');
       });
-      document.getElementById('editor').addEventListener('click',()=>{     // just for check purpose
+
+      //Development Purpose 
+      document.getElementById('editor').addEventListener('click',()=>{    
           let range = this.sel.getRangeAt(0);
           console.log(range);
       })
-      document.getElementById('editor').addEventListener('keydown',(e)=>{     // just for check purpose
-        
-        console.log(e);
-    })
+      // document.getElementById('editor').addEventListener('keydown',(e)=>{      
+      //   console.log(e);
+      // })
+      //  document.getElementById('editor').addEventListener('input',(e)=>{      
+      //      console.log(e);
+      //   })
   }
   
   blur(){
@@ -110,12 +114,12 @@ export class TextEditorComponent implements OnInit {
   toggleEmojiPicker(){
     this.showEmoji = this.showEmoji === true?false:true;
     if(!this.showEmoji)
-      document.getElementById('editor').focus();
+      this.focus();
   }
 
-  addEmoji(event){
+  addEmoji(event: any){
 
-    document.getElementById('editor').focus();
+    this.focus();
     if (window.getSelection) 
     {
       this.sel.removeAllRanges();
@@ -144,13 +148,13 @@ export class TextEditorComponent implements OnInit {
     this.showEmoji = false;
   }
 
-  setValue(innerText, innerHtml){
+  setValue(innerText: string, innerHtml: string){
     this.innerText = innerText;
     this.innerHtml = innerHtml;
     if(this.innerText === '')
-      document.execCommand('removeFormat', false, ''); //remove previous format once the editor is clear
+      document.execCommand('removeFormat', false, ''); // remove previous format once the editor is clear
     
-    this.lastChar = this.getPrecedingCharacter(window.getSelection().anchorNode); //gets the last input character
+    this.lastChar = this.getPrecedingCharacter(window.getSelection().anchorNode); // gets the last input character
     if(this.format && this.startOffset && this.tribute){
       this.format = false;
       this.endOffset = this.sel.getRangeAt(0).endOffset;
@@ -168,21 +172,28 @@ export class TextEditorComponent implements OnInit {
     }
   }
 
-  insName(){
+  insChar(char: string){
     if(window.getSelection){
+      this.focus();
+      let code = char==='@'?'Digit2':'Digit3';
+      let event = new KeyboardEvent('keydown',{'key':`${char}`, 'code':`${code}`});
+      document.getElementById('editor').dispatchEvent(event);
+      
       let r = this.sel.getRangeAt(0).cloneRange();
       this.sel.removeAllRanges();
-      const a = document.createTextNode('@');
+      const a = document.createTextNode(`${char}`);
+    
       r.insertNode(a);
-      r.insertNode(document.createTextNode(' '));
       r.setStartAfter(a);
       this.sel.addRange(r);
-      let event = new KeyboardEvent('keydown',{'key':'@', 'code':'Digit2'});
-        document.getElementById('editor').dispatchEvent(event);
-      
+            
+      this.setValue(this.innerText, this.innerHtml);  
     }
   }
 
+  focus(){
+    document.getElementById('editor').focus();
+  }
 
   getPrecedingCharacter(container : any) // get last character
   { 
@@ -191,7 +202,12 @@ export class TextEditorComponent implements OnInit {
     return r.toString().slice(-1);
   }
 
-  closed(){ //insert mentions
+  // opened(event: any){
+  //   console.log('OPEN', event);
+  // }
+
+  closed(event: any){ // insert mentions
+    // console.log('CLOSED', event);
     if(this.tribute !== '')
     {
       const input = document.createElement('input');
@@ -207,15 +223,17 @@ export class TextEditorComponent implements OnInit {
       const range = this.sel.getRangeAt(0);
       this.sel.removeAllRanges();
 
-      let sp2 = document.createTextNode(' ');
+      let sp = document.createTextNode(' ');
       range.insertNode(input);
-      range.insertNode(sp2);
+      range.insertNode(sp);
       range.setStartAfter(input);
       this.sel.addRange(range);
       this.tribute = '';
     }
   }
-  saveData(){
+
+  //Development Purpose
+  saveData(){ 
     document.getElementById('content').innerHTML = '';
     document.getElementById('content').innerHTML = this.innerHtml;
   }
