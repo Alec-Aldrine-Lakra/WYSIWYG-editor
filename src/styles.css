@@ -13,3 +13,11 @@ app-text-editor{
 .emoji-mart-preview{
     display: none !important;
 }
+#content{
+    position: relative;
+    padding: 10px;
+    background-color: #23241F;
+    color: #C1B864;
+    width: 50%;
+    height: 50%;
+}

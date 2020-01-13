@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": ["dom-inputevent"]
+    "types": ["node","dom-inputevent"]
   },
   "files": [
     "src/main.ts",
