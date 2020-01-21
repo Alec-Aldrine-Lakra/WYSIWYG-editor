@@ -1,8 +1,8 @@
 'use strict';
 import { Component, OnInit } from '@angular/core';
 import * as Bowser from 'bowser';
-import ReconnectingWebSocket from 'reconnecting-websocket';
-import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html'; 
+// import ReconnectingWebSocket from 'reconnecting-websocket';
+// import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html'; 
 const chance = require('chance').Chance();
 
 
@@ -90,7 +90,7 @@ export class TextEditorComponent implements OnInit {
     return ['Alec', 'Joyce', 'Nalin', 'Dominic'];
   }
 
-  dates(){ // return dates
+  dates() { // return dates
     return [ '20-12-13', '13-04-19', '16-12-11']
   }
 
@@ -138,39 +138,38 @@ export class TextEditorComponent implements OnInit {
   }
 
 
-  updateContents(index: number, ops: any, children: any) {
-    this.focus();
-    const preCaretRange = this.sel.getRangeAt(0).cloneRange();
-    for (let i=0; i< children.length; i++) {
-      if (children[i].textContent.length < index) {
-          console.log(children[i].textContent.length);
-          index -= children[i].textContent.length;
-          // console.log(index);
-      } else {
-        if (children[i].nodeType === 1) {
-          this.updateContents(index, ops, children[i].childNodes);
-        } else {
-            console.log(index);
-            if(ops.insert) {
-              preCaretRange.setStart(children[i] , index);
-              preCaretRange.setEnd(children[i] , index);
-              preCaretRange.insertNode(document.createTextNode(ops.insert));
-            } else {
-              preCaretRange.setStart(children[i] , index);
-              preCaretRange.setEnd(children[i] , index + 1);
-              console.log(preCaretRange.toString());
-              preCaretRange.deleteContents();
-            }
-            break;
-        }
-      }
-    }
-  }
-  deltaToHtml(data: any) {
-    const converter = new QuillDeltaToHtmlConverter(data, {});
-    const html = converter.convert();
-    return html;
-  }
+  // updateContents(index: number, ops: any, children: any) {
+  //   this.focus();
+  //   const preCaretRange = this.sel.getRangeAt(0).cloneRange();
+  //   for (let i = 0; i< children.length; i++) {
+  //     if (children[i].textContent.length < index) {
+  //         console.log(children[i]);
+  //         index -= children[i].textContent.length;
+  //         // console.log(index);
+  //     } else {
+  //       if (children[i].nodeType === 1) {
+  //         this.updateContents(index, ops, children[i].childNodes);
+  //       } else {
+  //           if(ops.insert) {
+  //             preCaretRange.setStart(children[i] , index);
+  //             preCaretRange.setEnd(children[i] , index);
+  //             preCaretRange.insertNode(document.createTextNode(ops.insert));
+  //           } else {
+  //             preCaretRange.setStart(children[i] , index);
+  //             preCaretRange.setEnd(children[i] , index + 1);
+  //             console.log(preCaretRange.toString());
+  //             preCaretRange.deleteContents();
+  //           }
+  //           break;
+  //       }
+  //     }
+  //   }
+  // }
+  // deltaToHtml(data: any) {
+  //   const converter = new QuillDeltaToHtmlConverter(data, {});
+  //   const html = converter.convert();
+  //   return html;
+  // }
 
   blur() {
     this.oldRange = this.sel.getRangeAt(0).cloneRange(); // to store the range when element is blurred
@@ -256,97 +255,97 @@ export class TextEditorComponent implements OnInit {
       return caretOffset;
   }
 
-  generateDelta(op: string, data: any, retain: number) {
+  // generateDelta(op: string, data: any, retain: number) {
 
-      const d = document.getElementById('content');
-      let changeFormat: string;
-      let contentFormat: string;
-      d.innerHTML = '';
-      if (retain - 1 > 0) {
-        retain = op === 'insert' ? retain - 1 : retain;
-        if (op === 'insert') {
-          this.change = { ops: [{retain}, { insert : data }]};
-        } else {
-          this.change = { ops: [{retain}, { delete : data }]};
-        }
+  //     const d = document.getElementById('content');
+  //     let changeFormat: string;
+  //     let contentFormat: string;
+  //     d.innerHTML = '';
+  //     if (retain - 1 > 0) {
+  //       retain = op === 'insert' ? retain - 1 : retain;
+  //       if (op === 'insert') {
+  //         this.change = { ops: [{retain}, { insert : data }]};
+  //       } else {
+  //         this.change = { ops: [{retain}, { delete : data }]};
+  //       }
 
-        changeFormat = `change = { <br>
-          &nbsp; "ops": [ <br>
-          &nbsp;&nbsp;&nbsp;&nbsp; { <br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "retain": ${retain} <br>
-          &nbsp;&nbsp;&nbsp;&nbsp;  },<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;  {<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "${op}": "${data}"<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;  }<br>
-          &nbsp;&nbsp;]<br>
-        }`; // dev purpose
+  //       changeFormat = `change = { <br>
+  //         &nbsp; "ops": [ <br>
+  //         &nbsp;&nbsp;&nbsp;&nbsp; { <br>
+  //         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "retain": ${retain} <br>
+  //         &nbsp;&nbsp;&nbsp;&nbsp;  },<br>
+  //         &nbsp;&nbsp;&nbsp;&nbsp;  {<br>
+  //         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "${op}": "${data}"<br>
+  //         &nbsp;&nbsp;&nbsp;&nbsp;  }<br>
+  //         &nbsp;&nbsp;]<br>
+  //       }`; // dev purpose
 
-      } else {
+  //     } else {
 
-          if (retain !== 0 && op === 'delete' ) {
-            this.change = { ops: [{retain}, { delete : data }]};
-            changeFormat = `change = { <br>
-              &nbsp; "ops": [ <br>
-              &nbsp;&nbsp;&nbsp;&nbsp; { <br>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "retain": ${retain} <br>
-              &nbsp;&nbsp;&nbsp;&nbsp;  },<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;  {<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "${op}": "${data}"<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;  }<br>
-              &nbsp;&nbsp;]<br>
-            }`;
+  //         if (retain !== 0 && op === 'delete' ) {
+  //           this.change = { ops: [{retain}, { delete : data }]};
+  //           changeFormat = `change = { <br>
+  //             &nbsp; "ops": [ <br>
+  //             &nbsp;&nbsp;&nbsp;&nbsp; { <br>
+  //             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "retain": ${retain} <br>
+  //             &nbsp;&nbsp;&nbsp;&nbsp;  },<br>
+  //             &nbsp;&nbsp;&nbsp;&nbsp;  {<br>
+  //             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "${op}": "${data}"<br>
+  //             &nbsp;&nbsp;&nbsp;&nbsp;  }<br>
+  //             &nbsp;&nbsp;]<br>
+  //           }`;
 
 
-          } else {
-            if (op === 'insert') {
-              this.change = { ops: [{ insert: data }]};
-            } else {
-              this.change = { ops: [{ delete : data }]};
-            }
+  //         } else {
+  //           if (op === 'insert') {
+  //             this.change = { ops: [{ insert: data }]};
+  //           } else {
+  //             this.change = { ops: [{ delete : data }]};
+  //           }
 
-            changeFormat = `change = { <br>
-              &nbsp; "ops": [ <br>
-              &nbsp;&nbsp;&nbsp;&nbsp;  {<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "${op}": "${data}"<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;  }<br>
-              &nbsp;&nbsp;]<br>
-            }`;
-          }
-      }
-      let s = document.getElementById('editor').innerHTML;
-      s = s.replace(/<br>/g, '/n');
-      s = s.replace(/<\/[p,br]*>/g, '/n');
-      s = s.replace(/<\/?[p]*>/g, '');
-      s = s.replace(/\\/g, '\\\\');
-      const a = this.author;
-      this.content = {
-        ops : [{ insert : s, author: a }]
-      };
-      contentFormat = `content = {<br>
-        &nbsp; "ops": [ <br>
-        &nbsp;&nbsp;&nbsp;&nbsp;  {<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "insert": "${s}"<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "author": "${this.author}"<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;  }<br>
-        &nbsp;&nbsp;]<br>
-      }`;
+  //           changeFormat = `change = { <br>
+  //             &nbsp; "ops": [ <br>
+  //             &nbsp;&nbsp;&nbsp;&nbsp;  {<br>
+  //             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "${op}": "${data}"<br>
+  //             &nbsp;&nbsp;&nbsp;&nbsp;  }<br>
+  //             &nbsp;&nbsp;]<br>
+  //           }`;
+  //         }
+  //     }
+  //     let s = document.getElementById('editor').innerHTML;
+  //     s = s.replace(/<br>/g, '/n');
+  //     s = s.replace(/<\/[p,br]*>/g, '/n');
+  //     s = s.replace(/<\/?[p]*>/g, '');
+  //     s = s.replace(/\\/g, '\\\\');
+  //     const a = this.author;
+  //     this.content = {
+  //       ops : [{ insert : s, author: a }]
+  //     };
+  //     contentFormat = `content = {<br>
+  //       &nbsp; "ops": [ <br>
+  //       &nbsp;&nbsp;&nbsp;&nbsp;  {<br>
+  //       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "insert": "${s}"<br>
+  //       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "author": "${this.author}"<br>
+  //       &nbsp;&nbsp;&nbsp;&nbsp;  }<br>
+  //       &nbsp;&nbsp;]<br>
+  //     }`;
 
-      d.innerHTML = changeFormat + '\n\n' + contentFormat; // Development Purpose
-      // if ($event.source !== 'user') return;
-      this.doc.submitOp(this.change, {source: 'editor'});
-  }
+  //     d.innerHTML = changeFormat + '\n\n' + contentFormat; // Development Purpose
+  //     // if ($event.source !== 'user') return;
+  //     this.doc.submitOp(this.change, {source: 'editor'});
+  // }
 
 
 
   setValue(event: any, innerText: string, innerHtml: string) {
 
-    if (event) {
-       if (event.data) {
-          this.generateDelta('insert', event.data, this.showPosition(document.getElementById('editor')));
-       } else {
-         this.generateDelta('delete', this.deleteLength, this.showPosition(document.getElementById('editor')));
-       }
-    }
+    // if (event) {
+    //    if (event.data) {
+    //       this.generateDelta('insert', event.data, this.showPosition(document.getElementById('editor')));
+    //    } else {
+    //      this.generateDelta('delete', this.deleteLength, this.showPosition(document.getElementById('editor')));
+    //    }
+    // }
 
     this.innerText = innerText;
     this.innerHtml = innerHtml;
